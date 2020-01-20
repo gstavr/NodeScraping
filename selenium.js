@@ -2,26 +2,38 @@ const webdriver = require("selenium-webdriver");
 const request = require("request");
 const cheerio = require("cheerio");
 
-function searchTextOnGoogle() {
+async function searchTextOnGoogle() {
   let driver = new webdriver.Builder().forBrowser("chrome").build();
 
-  driver.get("https://www.ab.gr/").then(() => {
-    driver
-      .findElement()
-      //.findElement(webdriver.By.className("promotions"))
-      //.findElement(webdriver.By.className("promotions"))
-      .click()
-      .then(() => {
-        driver.getPageSource().then(html => {
-          console.log(html);
-        });
-
-        driver.getTitle().then(title => {
-          console.log(title);
-          driver.quit();
-        });
+  driver
+    .get("https://www.ab.gr/")
+    .then(() => {
+      return driver.findElements(webdriver.By.className("main seeAll"));
+    })
+    .then(Elements => {
+      Promise.all(Elements).then(function(values) {
+        console.log(values);
       });
-  });
+
+      // Elements.forEach(element => {
+      //   setTimeout(() => {
+      //     console.log(element.getText());
+      //     //element.click();
+      //   }, 2000);
+      // });
+    });
+
+  // await driver.get("https://www.ab.gr/").then(() => {
+
+  //   console.log("Before");
+  //   let test = await driver.findElements(webdriver.By.className("main seeAll"));
+
+  //   test.forEach(element => {
+  //     setTimeout(() => {
+  //       element.click();
+  //     });
+  //   }, 5000);
+  // });
 }
 
 searchTextOnGoogle();
