@@ -29,7 +29,7 @@ const puppeteer = require("puppeteer");
   click2Shophrefs.forEach(async link => {
     console.log(`Going to ${link.href}`);
     await page.goto(link.href);
-    await page.waitFor(".data-item");
+    await page.waitFor("li.data-item");
     console.log(`Gone to ${link.href}`);
     //setTimeout(() => {}, 5000);
   });
