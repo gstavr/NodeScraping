@@ -5,23 +5,23 @@ const cheerio = require("cheerio");
 async function searchTextOnGoogle() {
   let driver = new webdriver.Builder().forBrowser("chrome").build();
 
-  driver
-    .get("https://www.ab.gr/")
-    .then(() => {
-      return driver.findElements(webdriver.By.className("main seeAll"));
-    })
-    .then(Elements => {
-      Promise.all(Elements).then(function(values) {
-        console.log(values);
-      });
+  let Elements = driver.get("https://www.ab.gr/").then(() => {
+    return driver.findElements(webdriver.By.className("main seeAll"));
+  });
+  // .then(Elements => {
+  //   // Promise.all(Elements).then(function(values) {
+  //   //   console.log(values);
+  //   // });
 
-      // Elements.forEach(element => {
-      //   setTimeout(() => {
-      //     console.log(element.getText());
-      //     //element.click();
-      //   }, 2000);
-      // });
-    });
+  //   //console.log(Elements);
+
+  //   // Elements.forEach(element => {
+  //   //   setTimeout(() => {
+  //   //     console.log(element.getText());
+  //   //     //element.click();
+  //   //   }, 2000);
+  //   // });
+  // });
 
   // await driver.get("https://www.ab.gr/").then(() => {
 
@@ -34,6 +34,7 @@ async function searchTextOnGoogle() {
   //     });
   //   }, 5000);
   // });
+  console.log(Elements);
 }
 
 searchTextOnGoogle();
