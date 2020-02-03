@@ -28,6 +28,15 @@ const puppeteer = require("puppeteer");
   for (let link of click2Shophrefs) {
     await page.goto(link.href);
 
+    const pageNumbers = await page.$$eval(
+      ".active-pages .pagination-button",
+      pages => {
+        return pages;
+      }
+    );
+
+    console.log(pageNumbers.length);
+
     // Now collect all the ICO urls.
     const productList = await page.$$eval(".product-layout", productsArray => {
       return productsArray.map(product => {
