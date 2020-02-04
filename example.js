@@ -9,9 +9,9 @@ const puppeteer = require("puppeteer");
   await page.goto("https://www.ab.gr/");
   //await page.pdf({ path: "hn.pdf", format: "A4" });
 
-  //document.querySelectorAll('ul[data-level="1"] > li > a');
   await page.waitFor('ul[data-level="1"] > li > a');
 
+  // Find All Level 1 hLinks and store them
   const click2Shophrefs = await page.$$eval(
     'ul[data-level="1"] > li > a',
     href => {
@@ -24,23 +24,28 @@ const puppeteer = require("puppeteer");
     }
   );
 
-  // Visit each assets page one by one
+  // Visit each link page one by one
   for (let link of click2Shophrefs) {
+    let totalProducetPerCategory = [];
     await page.goto(link.href);
 
-    const pageNumbers = await page.$$eval(
-      ".active-pages .pagination-button",
-      pages => {
-        return pages;
+    // Find Pagination Number for each page
+    let nodeListLastChild = await page.$$eval(
+      "li.pagination-button:last-child",
+      () => {
+        let pageLength = document.querySelectorAll(
+          "li.pagination-button:last-child"
+        );
+
+        let nodeListToArray = [...pageLength];
+
+        return nodeListToArray.map(h => h.textContent);
       }
     );
 
-    console.log(pageNumbers.length);
-
-    // Now collect all the ICO urls.
+    // Now collect all the procuts for each Pagination Number 20 products
     const productList = await page.$$eval(".product-layout", productsArray => {
       return productsArray.map(product => {
-        console.log(product);
         let obj = {};
         obj.href = product.href;
         obj.text = product.text;
@@ -48,26 +53,32 @@ const puppeteer = require("puppeteer");
       });
     });
 
-    console.log(productList.length);
+    totalProducetPerCategory = [...productList];
 
-    // Visit each ICO one by one and collect the data.
-    // for (let icoUrl of icoUrls) {
-    //   await page.goto(icoUrl);
+    console.log(`Products: ` + parseInt(nodeListLastChild[0]));
 
-    //   const icoImgUrl = await page.$eval('#asset-logo-wrapper img', img => img.src);
-    //   const icoName = await page.$eval('h1', h1 => h1.innerText.trim());
-    //   // TODO: Gather all the needed info like description etc here.
+    // For each Page Number get All products
+    for (let i = 1; i < parseInt(nodeListLastChild[0]); i++) {
+      await page.goto(link.href + `?pageNumber=${i}`);
+      // Now collect all the procuts for each Pagination Number 20 products
+      const productListPerPage = await page.$$eval(
+        ".product-layout",
+        productsArrayPerPage => {
+          return productsArrayPerPage.map(product => {
+            let obj = {};
+            obj.href = product.href;
+            obj.text = product.text;
+            return obj;
+          });
+        }
+      );
+      totalProducetPerCategory = [
+        ...totalProducetPerCategory,
+        ...productListPerPage
+      ];
+    }
 
-    //   results.push([{
-    //     icoName,
-    //     icoUrl,
-    //     icoImgUrl
-    //   }]);
-    // }
-
-    // icoUrls.forEach(element => {
-    //   console.log(element.innerText);
-    // });
+    console.log(totalProducetPerCategory.length);
   }
 
   //await browser.close();
